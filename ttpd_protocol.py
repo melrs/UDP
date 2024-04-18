@@ -3,6 +3,7 @@ from ttpd.CommandHandler import CommandHandler
 from ttpd.ErrorHandler import ErrorHandler
 from ttpd.FetchHandler import FetchHandler
 from ttpd.Package import Package
+import config
 
 class TTPDProtocol:
     
@@ -11,9 +12,9 @@ class TTPDProtocol:
 
     def resolve(self, package: Package) -> CommandHandler:
         match package.method:
-            case 'FETCH':
-                return FetchHandler(package.data.decode())
-            case 'CHECK':
-                return CheckHandler(package.data.decode())
+            case config.FETCH:
+                return FetchHandler(package)
+            case config.CHECK:
+                return CheckHandler(package)
             case _:
-                return ErrorHandler(package.data.decode())
+                return ErrorHandler(package)
