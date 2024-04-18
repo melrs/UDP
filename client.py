@@ -40,7 +40,7 @@ class Client:
         port = tk.Entry(self.window)
         port.pack(anchor='center', padx=2, pady=2)
 
-        tk.Button(self.window, text="Connect", command=lambda: self.establish_socket_connection(host.get(), port.get())).pack(anchor='center', padx=2, pady=2)
+        tk.Button(self.window, text="Connect", command=lambda: self.establish_socket_connection(str(host.get()), int(port.get()))).pack(anchor='center', padx=2, pady=2)
         tk.Button(self.window, text="Use Default", command=lambda: self.establish_socket_connection(config.HOST, config.PORT)).pack(anchor='center', padx=2, pady=2)
         self.window.wait_variable(self.user_response)
         self.clear()
@@ -62,8 +62,8 @@ class Client:
 
         try:
             self.request()
-        except TypeError:
-            messagebox.showerror("Error", "Invalid Port or Host address: "+str(self.server_address))
+            print("Total packages received: ", len(self.received_data))
+
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -97,16 +97,29 @@ class Client:
 
     def listen(self):
         while True:
-            data, addr = self.sock.recvfrom(config.BUFFER_SIZE)
-            data = json.loads(data.decode())
+            try:
+                self.sock.settimeout(5)
+                data, addr = self.sock.recvfrom(config.BUFFER_SIZE)
+                data = json.loads(data.decode())
+            except socket.timeout:
+                messagebox.showerror("","Timeout")
+                exit(1)
+
             if data['status_code'] == config.SUCCESS_CODE:
                 break
             if data['status_code'] == config.ERROR_CODE:
                 messagebox.showerror("Error", data['data'])
                 self.sock.close()
                 exit(1)
+            if data['status_code'] != config.COUNTINUE_CODE:
+                print("Invalid status code received")
+                break
 
-            self.ask_user(data)
+            if config.RECOVERY_TEST_FLAG:
+                self.ask_user(data)
+            else:
+                self.keep(data)
+            time.sleep(0.1)
 
     def destroy(self, data):
         if data['package_id'] not in self.ids_to_recover:
