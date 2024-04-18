@@ -1,5 +1,7 @@
 import socket
-from config import HOST, PORT, BUFFER_SIZE
+import json
+import commons.config as config
+from commons.utils import build_package, calculate_checksum
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_address = (HOST, PORT)
