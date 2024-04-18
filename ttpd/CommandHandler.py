@@ -1,6 +1,5 @@
-
 from abc import ABC, abstractmethod
-import socket
+from UDPSocket import UDPSocket
 
 class CommandHandler(ABC):
     
@@ -8,5 +7,5 @@ class CommandHandler(ABC):
         self.filename = filename
 
     @abstractmethod
-    def handle(self, server_socket: socket.socket, addr):
+    def handle(self, server_socket: UDPSocket):
         pass

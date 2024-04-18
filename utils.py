@@ -1,17 +1,13 @@
 import hashlib
 import socket
 
+from config import ERROR_CODE
+from ttpd.Package import Package
+
 def calculate_checksum(data):
     sha256 = hashlib.sha256()
     sha256.update(data)
     return sha256.hexdigest()
 
-def receive_all_from_socket(server_socket: socket.socket, buffer_size: int):
-    data = b""
-    while True:
-        part, addr = server_socket.recvfrom(buffer_size)
-        data += part
-        print('Received:', part.decode())
-        if len(part) < buffer_size:
-            break
-    return [data, addr]
+def build_package(id: int, data, status_code: int):
+    return Package(id, status_code, len(data), data, calculate_checksum(data)).encode()

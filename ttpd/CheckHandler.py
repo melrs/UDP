@@ -1,14 +1,13 @@
 
-import socket
+from UDPSocket import UDPSocket
 from ttpd.CommandHandler import CommandHandler
 
 class CheckHandler(CommandHandler):
     
-    def handle(self, server_socket: socket.socket, addr):
+    def handle(self, server_socket: UDPSocket):
         try:
             print(f"Sending error message for {self.filename}")
             with open(self.filename, 'rb'):
-                server_socket.sendto("File exists".encode(), addr)
+                server_socket.send_sucess_message("File exists")
         except FileNotFoundError:
-            error = "ERROR - File not found".encode()
-            server_socket.sendto(error, addr)
+            server_socket.send_error_message("ERROR - File not found")
