@@ -1,11 +1,8 @@
 import socket
-
-SERVER_PORT = 12345
-BUFFER_SIZE = 1024
-HOST = 'localhost'
+from config import HOST, PORT, BUFFER_SIZE
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_address = (HOST, SERVER_PORT)
+server_address = (HOST, PORT)
 
 message = input("Mensagem: ").encode()
 sock.sendto(message, server_address)
