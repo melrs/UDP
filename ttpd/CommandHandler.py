@@ -6,7 +6,9 @@ class CommandHandler(ABC):
     
     def __init__(self, package: Package):
         self.package = package
-        self.filename = package.data.decode().split(" ")[0]
+        message = package.data.decode().split(" ")
+        print(message)
+        self.filename = message[0]
         self.packages_to_send = self.package.data.decode().split(" ")[1:]
 
     @abstractmethod

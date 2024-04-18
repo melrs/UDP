@@ -9,6 +9,8 @@ class FetchHandler(CommandHandler):
     
     def handle(self, server_socket: UDPSocket):
         try:
+            print(f"Fetching file {self.filename}")
+            print(self.packages_to_send)
             is_recovery_fetch = bool(self.packages_to_send)
             with open(self.filename, 'rb') as file:
                 i = 0
@@ -18,8 +20,11 @@ class FetchHandler(CommandHandler):
                     if not chunk:
                         server_socket.send_sucess_message(i, "File sent")
                         break
-                    if is_recovery_fetch and str(i) not in self.packages_to_send:
-                        continue
+                    if is_recovery_fetch:
+                        print(f"Sending package {i}")
+                        if str(i) not in self.packages_to_send:
+                            print(f"Skipping package {i}")
+                            continue
                     server_socket.sendto(i, chunk)
         except FileNotFoundError:
             server_socket.send_error_message("ERROR - File not found")
