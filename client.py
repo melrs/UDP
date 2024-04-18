@@ -24,7 +24,6 @@ class Client:
 
         self.server_address = (host, port)
         self.user_response.set("connected")
-        print(self.user_response)
 
     def main(self):
         self.window = tk.Tk()
@@ -107,10 +106,12 @@ class Client:
 
             if data['status_code'] == config.SUCCESS_CODE:
                 break
+
             if data['status_code'] == config.ERROR_CODE:
                 messagebox.showerror("Error", data['data'])
                 self.sock.close()
                 exit(1)
+
             if data['status_code'] != config.COUNTINUE_CODE:
                 print("Invalid status code received")
                 break
@@ -119,7 +120,6 @@ class Client:
                 self.ask_user(data)
             else:
                 self.keep(data)
-            time.sleep(0.1)
 
     def destroy(self, data):
         if data['package_id'] not in self.ids_to_recover:
