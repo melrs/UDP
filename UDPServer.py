@@ -16,17 +16,18 @@ class UDPServer:
         print('Servidor UDP pronto para receber conexões...')
 
         while True:
-            data = self.server_socket.recvfrom().data
+            package = self.server_socket.recvfrom()
+            data = package.data
             request = data.decode()
-
-            if ' ' not in request:
-                raise ValueError('Required format: COMMAND filename')
 
             print('Mensagem recebida:', request)
 
-            self.ttpd_protocol.resolve(data).handle(self.server_socket)
+            self.ttpd_protocol.resolve(package).handle(self.server_socket)
+            
+            data = self.server_socket.recvfrom().data
+            print('Resposta do cliente:', data.decode())
+            self.ttpd_protocol.resolve(package).handle(self.server_socket)
 
 server = UDPServer(HOST, PORT, BUFFER_SIZE)
 server.start()
-
 

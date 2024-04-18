@@ -1,7 +1,6 @@
 from config import BUFFER_SIZE
 from ttpd.CommandHandler import CommandHandler
 from ttpd.Package import Package
-from utils import build_package
 from UDPSocket import UDPSocket
 
 class FetchHandler(CommandHandler):
