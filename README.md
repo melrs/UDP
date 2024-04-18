@@ -22,6 +22,11 @@ The project involves creating a simplified UDP server based on a "Hello World" U
 
 - Python 3.x
 - A network connection between the client and server
+- Tkinter: Python's standard GUI package. To install it, you can use the following command:
+
+```bash
+sudo apt-get install python3-tk
+```
 
 ## Note
 
