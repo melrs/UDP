@@ -1,5 +1,6 @@
 import socket
 from config import HOST, PORT, BUFFER_SIZE
+from ttpd_protocol import handle_request
 
 def setup_server_socket(host, port, buffer_size):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -13,18 +14,15 @@ print('Servidor UDP pronto para receber conexões...')
 while True:
     data, addr = server_socket.recvfrom(BUFFER_SIZE)
     request = data.decode()
+    
+    if ' ' not in request:
+        raise ValueError('Required format: COMMAND filename')
+    
     print('Mensagem recebida:', request)
+    
+    for response in handle_request(data):
+        server_socket.sendto(response, addr)
+        print('Resposta enviada:', response.decode())
 
-    if request.startswith('GET'):
-        filename = request.split()[1][1:]
-        try:
-            with open(filename, 'rb') as file:
-                while True:
-                    chunk = file.read(BUFFER_SIZE)
-                    if not chunk:
-                        break
-                    server_socket.sendto(chunk, addr)
-        except FileNotFoundError:
-            error_msg = "Arquivo não encontrado"
-            server_socket.sendto(error_msg.encode(), addr)
+
 
