@@ -1,32 +1,20 @@
-import socket
-from config import BUFFER_SIZE
+from ttpd.CheckHandler import CheckHandler
+from ttpd.CommandHandler import CommandHandler
+from ttpd.ErrorHandler import ErrorHandler
+from ttpd.FetchHandler import FetchHandler
+from ttpd.Package import Package
+import config
 
-def fetch(filename):
-    try:
-        with open(filename, 'rb') as file:
-            while True:
-                chunk = file.read(BUFFER_SIZE)
-                if not chunk:
-                    break
-                yield chunk
-    except FileNotFoundError:
-        yield "ERROR - File not found".encode()
+class TTPDProtocol:
+    
+    def __init__(self):
+        pass
 
-def check(filename):
-    try:
-        with open(filename, 'rb'):
-            yield "File exists".encode()
-    except FileNotFoundError:
-        yield "ERROR - File not found".encode()
-
-def handle_request(data):
-    request = data.decode()
-    command, filename = request.split(maxsplit=1)
-
-    match command:
-        case 'FETCH':
-            return fetch(filename)
-        case 'CHECK':
-            return check(filename)
-        case _:
-            return iter(["ERROR - Invalid command".encode()])
+    def resolve(self, package: Package) -> CommandHandler:
+        match package.method:
+            case config.FETCH:
+                return FetchHandler(package)
+            case config.CHECK:
+                return CheckHandler(package)
+            case _:
+                return ErrorHandler(package)
